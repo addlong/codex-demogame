@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#151128">
+<title>Mothlight</title>
+<link rel="stylesheet" href="style.css">
+<script src="game.js" defer></script>
+</head>
+<body>
+<main>
+  <header class="mast">
+    <div class="brand"><span class="mark" aria-hidden="true">✦</span> MOTHLIGHT</div>
+    <div class="tools">
+      <button id="sound" type="button" aria-pressed="false">Sound off</button>
+      <button id="pause" type="button" disabled>Pause</button>
+    </div>
+  </header>
+  <section class="cabinet" aria-label="Mothlight game">
+    <div class="hud">
+      <span class="chapter"><i></i> THE LANTERN TRAIL</span>
+      <span class="counter" aria-live="polite"><img src="coin.png" alt="Coins"> <span id="count">00 / 12</span></span>
+    </div>
+    <div class="screen">
+      <canvas id="world" width="960" height="480" aria-label="Moonlit forest playfield"></canvas>
+      <div class="overlay" id="overlay">
+        <div class="title-card">
+          <div class="crest" aria-hidden="true">◇ &nbsp; ✦ &nbsp; ◇</div>
+          <h1 id="title">Mothlight</h1>
+          <p id="message">Follow the coins. Find the lantern.</p>
+          <button id="play" type="button">Play game <span aria-hidden="true">▸</span></button>
+        </div>
+      </div>
+    </div>
+    <footer class="control-bar">
+      <div class="keys"><span><kbd>←</kbd> <kbd>→</kbd> Move</span><span><kbd class="space">Space</kbd> Jump / wingbeat</span></div>
+      <button id="restart" type="button" disabled>↻ &nbsp; Restart</button>
+    </footer>
+  </section>
+  <div class="touch" aria-label="Touch controls">
+    <button data-input="left" type="button" aria-label="Move left">←</button>
+    <button data-input="right" type="button" aria-label="Move right">→</button>
+    <button data-input="jump" type="button">↑ Jump</button>
+  </div>
+  <p class="hint"><span>✦</span> Press jump again in the air for an extra wingbeat.</p>
+</main>
+</body>
+</html>
