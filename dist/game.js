@@ -29,6 +29,22 @@ const coinPositions = [
 const checkpoints = [{x: 90, y: 403}, {x: 1250, y: 416}, {x: 2300, y: 389}];
 let coins, moth, particles, camera, checkpoint, elapsed;
 let state = "ready";
+let selectedCharacter = "sun";
+const characterNames = {sun: "Monkey Sun", dragon: "Dragon Girl", fairy: "Fairywhite"};
+
+for (const button of document.querySelectorAll("[data-character]")) {
+  button.addEventListener("click", () => {
+    if (state !== "ready" && state !== "won") return;
+    selectedCharacter = button.dataset.character;
+    for (const option of document.querySelectorAll("[data-character]")) {
+      const selected = option === button;
+      option.setAttribute("aria-pressed", String(selected));
+      option.querySelector(".selection").textContent = selected ? "Selected" : "Choose";
+    }
+    el("play").firstChild.textContent = "Play as " + characterNames[selectedCharacter] + " ";
+  });
+}
+el("characters").onclick = () => setState("ready");
 let audio;
 let soundOn = false;
 let last = 0;
@@ -70,6 +86,13 @@ function updateCount() {
 function setState(next) {
   state = next;
   el("overlay").hidden = state === "playing";
+  el("character-picker").hidden = state === "playing" || state === "paused";
+  el("characters").hidden = state === "ready" || state === "won";
+  if (state === "ready") {
+    el("title").textContent = "Mothlight";
+    el("message").textContent = "Follow the coins. Find the lantern.";
+    el("play").firstChild.textContent = "Play as " + characterNames[selectedCharacter] + " ";
+  }
   el("pause").disabled = state === "ready" || state === "won";
   el("pause").textContent = state === "paused" ? "Resume" : "Pause";
   el("restart").disabled = state === "ready";
@@ -357,27 +380,68 @@ function drawPlatform(x, y, length, floating) {
   }
 }
 
-function drawMoth(t) {
-  const {x, y, grounded, vx, direction, stretch, wingbeat} = moth;
+// Shared renderer keeps the selection portraits and playable heroes identical.
+function drawCharacter(t, context = ctx, pose = moth, character = selectedCharacter) {
+  const {x, y, grounded, vx, direction, stretch, wingbeat} = pose;
   const stride = grounded && Math.abs(vx) > 20 ? Math.sin(t * 25) : 0;
   const flap = Math.sin(t * (grounded ? 9 : 37));
-  ctx.save();
-  ctx.translate(Math.round(x), Math.round(y + (grounded ? -Math.abs(stride) * 2 : 0)));
-  ctx.scale(direction * (1 + stretch), 1 - stretch);
-  const span = 20 + flap * (grounded ? 2 : 8);
-  shape(wingbeat ? "#aa84d7" : "#736693",
-    [[-4,-20],[-span,-33],[-span-2,-25],[-span+4,-14],[-12,-11],[-6,-15]]);
-  rect(-span + 4, -25, 4, 3, wingbeat ? "#f6b7d0" : "#a092b0");
-  rect(-7, -4, 5, 4 + stride * 2, "#ce9178");
-  rect(4, -4 + stride * 2, 5, 4, "#ce9178");
-  shape("#f2c590", [[-10,-20],[-6,-27],[7,-27],[12,-22],[13,-12],[8,-6],[-6,-6],[-11,-11]]);
-  rect(-6,-20,17,10,"#ffe1a9");
-  rect(7,-19,3,5,"#352642");
-  rect(-2,-27,2, -6,"#f2c590");
-  rect(7,-27,2, -7,"#f2c590");
-  rect(-4,-34,3,2,"#ffe4a8");
-  rect(9,-35,3,2,"#ffe4a8");
-  ctx.restore();
+  const rect = (x, y, w, h, color) => { context.fillStyle = color; context.fillRect(x, y, w, h); };
+  const shape = (color, points) => {
+    context.fillStyle = color; context.beginPath();
+    points.forEach(([x, y], i) => i ? context.lineTo(x, y) : context.moveTo(x, y));
+    context.closePath(); context.fill();
+  };
+  context.save();
+  context.translate(Math.round(x), Math.round(y + (grounded ? -Math.abs(stride) * 2 : 0)));
+  context.scale(direction * (1 + stretch), 1 - stretch);
+  if (character === "sun") {
+    // Curled tail, red scarf, golden armor and a gold-tipped staff.
+    shape("#c28a51", [[-7,-12],[-20,-6],[-27,-10],[-27,-23],[-21,-26],[-17,-22],[-22,-20],[-22,-13],[-18,-12],[-8,-19]]);
+    shape("#d85c66", [[-5,-25],[-26,-30-flap*2],[-21,-21],[-30,-18],[-5,-18]]);
+    rect(17,-43,3,43,"#ae6947");rect(16,-44,5,7,"#ffe59d");rect(16,-7,5,7,"#ffe59d");
+    rect(-8,-22,17,17,"#e7b858");rect(-8,-13,17,4,"#ad454e");
+    rect(-9,-6,6,6+stride*2,"#61435c");rect(4,-6+stride*2,6,6,"#61435c");
+    rect(-12,-36,24,17,"#a96d43");rect(-15,-31,5,8,"#dba06b");rect(10,-31,5,8,"#dba06b");
+    shape("#ffd3a0", [[-8,-32],[-2,-29],[4,-32],[10,-30],[11,-21],[-8,-21]]);
+    rect(-11,-36,23,4,"#ffda79");rect(-1,-39,5,7,"#fff0ac");
+    rect(5,-28,3,4,"#352642");rect(6,-21,7,3,"#ffd3a0");
+  } else if (character === "dragon") {
+    const span = 24 + flap * (grounded ? 2 : 6);
+    shape(wingbeat ? "#73d4c5" : "#548e9d", [[-5,-23],[-span,-38],[-span+2,-20],[-16,-23],[-17,-12],[-5,-16]]);
+    shape("#4ba99d", [[-7,-10],[-21,-3],[-30,-9],[-32,-18],[-26,-13],[-24,-8],[-8,-18]]);
+    rect(-10,-35,21,25,"#24485e");
+    shape("#6ed5c4", [[-6,-24],[7,-24],[13,-4],[-12,-4]]);
+    rect(-7,-16,16,3,"#f3cf87");rect(-7,-4,5,4+stride*2,"#47708d");rect(5,-4+stride*2,5,4,"#47708d");
+    rect(-7,-33,17,13,"#f6cfba");rect(-9,-37,21,6,"#24485e");rect(-9,-32,4,14,"#24485e");
+    shape("#f6d997", [[-6,-35],[-12,-46],[-5,-42],[-2,-35]]);
+    shape("#f6d997", [[6,-35],[10,-46],[13,-42],[10,-34]]);
+    rect(5,-29,3,4,"#24485e");rect(11,-31,5,4,"#86e8d6");
+  } else {
+    const span = 25 + flap * (grounded ? 2 : 7);
+    shape(wingbeat ? "#d8e7ff" : "#8d92ba", [[-5,-22],[-span,-38],[-span-2,-26],[-14,-18],[-span+2,-17],[-20,-8],[-5,-13]]);
+    rect(-18,-30,3,17,"#a9bdec");
+    rect(-10,-37,22,25,"#ddd8f2");
+    shape("#fff3fa", [[-5,-25],[6,-25],[15,-4],[-14,-4]]);
+    rect(-7,-17,15,3,"#b6a0de");rect(-7,-4,5,4+stride*2,"#c9b7eb");rect(5,-4+stride*2,5,4,"#c9b7eb");
+    rect(-7,-33,17,13,"#ffdbc9");
+    shape("#f5f2ff", [[-11,-33],[-6,-40],[7,-39],[13,-31],[3,-33],[-3,-29]]);
+    rect(-10,-28,4,15,"#f5f2ff");rect(5,-29,3,4,"#59416e");
+    rect(-8,-39,18,3,"#ffdd99");rect(0,-43,3,6,"#fff0c9");
+    rect(18,-33,2,30,"#d5bbef");
+    shape("#fff0c9", [[19,-43],[22,-37],[28,-35],[22,-32],[19,-26],[16,-32],[10,-35],[16,-37]]);
+  }
+  context.restore();
+}
+
+function drawPortraits() {
+  for (const button of document.querySelectorAll("[data-character]")) {
+    const portrait = button.querySelector("canvas");
+    const context = portrait.getContext("2d");
+    context.clearRect(0, 0, 100, 100);
+    context.save(); context.scale(1.7, 1.7);
+    drawCharacter(0, context, {x: 30, y: 55, grounded: true, vx: 0, direction: 1, stretch: 0, wingbeat: true}, button.dataset.character);
+    context.restore();
+  }
 }
 
 function draw(t, dt) {
@@ -402,7 +466,7 @@ function draw(t, dt) {
   rect(lantern.x - 15, lantern.y - 12, 30, 24, "#422942");
   rect(lantern.x - 10, lantern.y - 9, 20, 18, "#ffcb78");
   star(lantern.x, lantern.y, 7, "#fff1b9");
-  drawMoth(t);
+  drawCharacter(t);
   particles = particles.filter(p => p.life > 0);
   for (const p of particles) {
     ctx.globalAlpha = clamp(p.life * 3, 0, 1);
@@ -430,5 +494,7 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
+drawPortraits();
 reset();
+setState("ready");
 requestAnimationFrame(frame);

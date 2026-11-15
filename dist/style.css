@@ -38,3 +38,16 @@ kbd{display:inline-grid;place-items:center;color:var(--ink);padding:3px 6px;min-
 .touch{display:none}
 @media(pointer:coarse),(max-width:650px){.touch{display:flex;gap:9px;margin-top:12px;touch-action:none}.touch button{user-select:none;touch-action:none;min-width:58px;min-height:47px;font-size:17px}.touch button:last-child{margin-left:auto}.keys{gap:9px}.control-bar,.hud{padding-inline:10px}}
 @media(max-width:550px){main{width:calc(100% - 22px);padding:18px 0}.brand{font-size:12px;letter-spacing:.16em}.tools{gap:5px}button{font-size:11px;padding:7px 9px}.title-card{padding:6px 8px 11px}.title-card p{margin:9px 0 11px}#play{padding:7px 11px;min-width:115px}.keys{font-size:10px}.hud,.control-bar{min-height:42px}}
+
+[hidden]{display:none!important}
+.character-picker{margin:12px 16px 16px;padding:10px 12px 12px;border:1px solid var(--line);border-radius:12px;min-width:0}
+.character-picker legend{padding:0 8px;color:var(--yellow);font-size:13px;letter-spacing:.08em}
+.character-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.character-options button{display:flex;align-items:center;flex-direction:column;gap:6px;padding:8px;background:#292039;transition:background .15s,border-color .15s}
+.character-options button[aria-pressed="true"]{border-color:var(--yellow);background:#443043;box-shadow:inset 0 0 0 1px var(--yellow)}
+.character-options canvas{width:80px;height:80px;aspect-ratio:1;image-rendering:pixelated}
+.character-options strong{font-size:14px}
+.character-options span{color:var(--muted);font-size:11px;line-height:1.4}
+.selection{color:var(--yellow);font-size:11px}
+.character-picker p{margin:12px 0 0;text-align:center;color:var(--muted);font-size:11px;line-height:1.5}
+@media(max-width:550px){.character-picker{margin:10px 8px;padding:8px}.character-options{gap:6px}.character-options button{padding:6px 3px}.character-options strong{font-size:11px}.character-options span{font-size:10px}.character-options canvas{width:60px;height:60px}.tools{flex-wrap:wrap;justify-content:flex-end}.mast{gap:8px}}

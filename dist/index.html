@@ -14,6 +14,7 @@
     <div class="brand"><span class="mark" aria-hidden="true">✦</span> MOTHLIGHT</div>
     <div class="tools">
       <button id="sound" type="button" aria-pressed="false">Sound off</button>
+      <button id="characters" type="button" hidden>Characters</button>
       <button id="pause" type="button" disabled>Pause</button>
     </div>
   </header>
@@ -22,6 +23,15 @@
       <span class="chapter"><i></i> THE LANTERN TRAIL</span>
       <span class="counter" aria-live="polite"><img src="coin.png" alt="Coins"> <span id="count">00 / 12</span></span>
     </div>
+    <fieldset id="character-picker" class="character-picker">
+      <legend>Choose your hero</legend>
+      <div class="character-options">
+        <button type="button" data-character="sun" aria-pressed="true"><canvas width="100" height="100" aria-hidden="true"></canvas><strong>Monkey Sun</strong><span>Golden staff &amp; cloud steps</span><small class="selection">Selected</small></button>
+        <button type="button" data-character="dragon" aria-pressed="false"><canvas width="100" height="100" aria-hidden="true"></canvas><strong>Dragon Girl</strong><span>Jade horns &amp; dragon wings</span><small class="selection">Choose</small></button>
+        <button type="button" data-character="fairy" aria-pressed="false"><canvas width="100" height="100" aria-hidden="true"></canvas><strong>Fairywhite</strong><span>Moon wand &amp; silver wings</span><small class="selection">Choose</small></button>
+      </div>
+      <p>Three heroes. The same double-jump adventure.</p>
+    </fieldset>
     <div class="screen">
       <canvas id="world" width="960" height="480" aria-label="Moonlit forest playfield"></canvas>
       <div class="overlay" id="overlay">
