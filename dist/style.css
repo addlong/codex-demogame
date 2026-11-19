@@ -1,6 +1,6 @@
 :root{color-scheme:dark;--ink:#f4e9db;--muted:#b4a6c7;--yellow:#ffdb8d;--line:#514262;--panel:#211a34}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 32%,#342044 0,#1c152e 50%,#120f21 100%);color:var(--ink);font-family:"Courier Prime","Courier New",monospace}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 32%,#78618d 0,#514563 50%,#39334e 100%);color:var(--ink);font-family:"Courier Prime","Courier New",monospace}
 main{width:min(1080px,calc(100% - 64px));padding:34px 0 22px}
 .mast,.hud,.control-bar,.tools,.keys,.brand{display:flex;align-items:center}
 .mast,.hud,.control-bar{justify-content:space-between}
@@ -20,9 +20,9 @@ button:disabled{opacity:.46;cursor:default}
 .counter{display:flex;align-items:center;gap:8px}
 .counter img{width:12px;height:auto;image-rendering:pixelated}
 .hint span{color:var(--yellow)}
-.screen{position:relative;background:#211c44}
+.screen{position:relative;background:#666a9c}
 canvas{display:block;width:100%;aspect-ratio:2;image-rendering:pixelated}
-.overlay{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(90deg,#17122d77,#1b133373 50%,#17122d44);text-align:center}
+.overlay{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(90deg,#17122d44,#1b13333b 50%,#17122d22);text-align:center}
 .overlay[hidden]{display:none}
 .title-card{padding:20px 16px 28px}
 .crest{color:var(--yellow);font-size:clamp(11px,1.6vw,18px);margin-bottom:6px}

@@ -63,7 +63,7 @@ const clamp = (n, min, max) => Math.max(min, Math.min(n, max));
 
 function spawn() {
   const {x, y} = checkpoints[checkpoint];
-  moth = {x, y, vx: 0, vy: 0, direction: 1, grounded: true, wingbeat: true, grace: 0, stretch: 0};
+  moth = {x, y, vx: 0, vy: 0, direction: 1, grounded: true, airJumps: 2, grace: 0, stretch: 0};
   camera = clamp(x - width * .33, 0, trailEnd - width);
   queuedJump = 0;
 }
@@ -203,10 +203,10 @@ function step(dt) {
   moth.vx += (target - moth.vx) * Math.min(1, dt * (move ? 13 : 17));
   if (move) moth.direction = move;
   moth.grace = moth.grounded ? .09 : Math.max(0, moth.grace - dt);
-  if (queuedJump > 0 && (moth.grace > 0 || moth.wingbeat)) {
+  if (queuedJump > 0 && (moth.grace > 0 || moth.airJumps > 0)) {
     const extra = moth.grace === 0;
     moth.vy = extra ? -438 : -503;
-    if (extra) moth.wingbeat = false;
+    if (extra) moth.airJumps--;
     moth.grace = 0;
     moth.grounded = false;
     moth.stretch = -.18;
@@ -231,7 +231,7 @@ function step(dt) {
         moth.y = y;
         moth.vy = 0;
         moth.grounded = true;
-        moth.wingbeat = true;
+        moth.airJumps = 2;
         break;
       }
     }
@@ -290,9 +290,9 @@ function star(x, y, size, color) {
 }
 
 const sky = ctx.createLinearGradient(0, 0, 0, height);
-sky.addColorStop(0, "#171733");
-sky.addColorStop(.59, "#58466d");
-sky.addColorStop(1, "#b27d8b");
+sky.addColorStop(0, "#666a9c");
+sky.addColorStop(.59, "#a18db5");
+sky.addColorStop(1, "#e9b6ae");
 const seed = n => {
   const v = Math.sin(n * 129.71 + 9.27) * 43758.5453;
   return v - Math.floor(v);
@@ -344,20 +344,20 @@ function forest(t) {
     rect(moonX + dx, 119 + dy, w, 3, "#d997a188");
   }
   ctx.restore();
-  hills(camera * .17, 328, "#514063", 165, 83);
-  hills(camera * .27, 379, "#403357", 125, 49);
+  hills(camera * .17, 328, "#9582aa", 165, 83);
+  hills(camera * .27, 379, "#7c7197", 125, 49);
   for (let layer = 0; layer < 2; layer++) {
     const scroll = camera * (.33 + layer * .19);
     const first = Math.floor(scroll / 49);
     for (let i = first - 2; i < first + 23; i++) {
       pine(i * 49 - scroll + seed(i + 6) * 26, 463 + layer * 12,
         99 + seed(i + 131 + layer * 57) * (100 + layer * 31),
-        layer ? "#29253f" : "#39304f");
+        layer ? "#595777" : "#72688f");
     }
   }
   const fog = ctx.createLinearGradient(0, 404, 0, height);
-  fog.addColorStop(0, "#66527b00");
-  fog.addColorStop(1, "#71587780");
+  fog.addColorStop(0, "#c1adcf00");
+  fog.addColorStop(1, "#c1adcf80");
   ctx.fillStyle = fog;
   ctx.fillRect(0, 404, width, height - 404);
 }
@@ -382,7 +382,7 @@ function drawPlatform(x, y, length, floating) {
 
 // Shared renderer keeps the selection portraits and playable heroes identical.
 function drawCharacter(t, context = ctx, pose = moth, character = selectedCharacter) {
-  const {x, y, grounded, vx, direction, stretch, wingbeat} = pose;
+  const {x, y, grounded, vx, direction, stretch, airJumps} = pose;
   const stride = grounded && Math.abs(vx) > 20 ? Math.sin(t * 25) : 0;
   const flap = Math.sin(t * (grounded ? 9 : 37));
   const rect = (x, y, w, h, color) => { context.fillStyle = color; context.fillRect(x, y, w, h); };
@@ -407,7 +407,7 @@ function drawCharacter(t, context = ctx, pose = moth, character = selectedCharac
     rect(5,-28,3,4,"#352642");rect(6,-21,7,3,"#ffd3a0");
   } else if (character === "dragon") {
     const span = 24 + flap * (grounded ? 2 : 6);
-    shape(wingbeat ? "#73d4c5" : "#548e9d", [[-5,-23],[-span,-38],[-span+2,-20],[-16,-23],[-17,-12],[-5,-16]]);
+    shape(airJumps > 0 ? "#73d4c5" : "#548e9d", [[-5,-23],[-span,-38],[-span+2,-20],[-16,-23],[-17,-12],[-5,-16]]);
     shape("#4ba99d", [[-7,-10],[-21,-3],[-30,-9],[-32,-18],[-26,-13],[-24,-8],[-8,-18]]);
     rect(-10,-35,21,25,"#24485e");
     shape("#6ed5c4", [[-6,-24],[7,-24],[13,-4],[-12,-4]]);
@@ -418,7 +418,7 @@ function drawCharacter(t, context = ctx, pose = moth, character = selectedCharac
     rect(5,-29,3,4,"#24485e");rect(11,-31,5,4,"#86e8d6");
   } else {
     const span = 25 + flap * (grounded ? 2 : 7);
-    shape(wingbeat ? "#d8e7ff" : "#8d92ba", [[-5,-22],[-span,-38],[-span-2,-26],[-14,-18],[-span+2,-17],[-20,-8],[-5,-13]]);
+    shape(airJumps > 0 ? "#d8e7ff" : "#8d92ba", [[-5,-22],[-span,-38],[-span-2,-26],[-14,-18],[-span+2,-17],[-20,-8],[-5,-13]]);
     rect(-18,-30,3,17,"#a9bdec");
     rect(-10,-37,22,25,"#ddd8f2");
     shape("#fff3fa", [[-5,-25],[6,-25],[15,-4],[-14,-4]]);
@@ -439,7 +439,7 @@ function drawPortraits() {
     const context = portrait.getContext("2d");
     context.clearRect(0, 0, 100, 100);
     context.save(); context.scale(1.7, 1.7);
-    drawCharacter(0, context, {x: 30, y: 55, grounded: true, vx: 0, direction: 1, stretch: 0, wingbeat: true}, button.dataset.character);
+    drawCharacter(0, context, {x: 30, y: 55, grounded: true, vx: 0, direction: 1, stretch: 0, airJumps: 2}, button.dataset.character);
     context.restore();
   }
 }
